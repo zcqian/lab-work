@@ -49,13 +49,13 @@ def tinyimagenet():
 
 def cifar100():
     normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
-    dataset_train = CIFAR100(root='～/Datasets/cifar100', train=True, transform=transforms.Compose([
+    dataset_train = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
             transforms.RandomHorizontalFlip(),
             transforms.RandomCrop(32, 4),
             transforms.ToTensor(),
             normalize,
         ]), download=True)
-    dataset_val = datasets.CIFAR100(root='~/Datasets/cifar100', train=False, transform=transforms.Compose([
+    dataset_val = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=False, transform=transforms.Compose([
             transforms.ToTensor(),
             normalize,
         ]))
@@ -65,13 +65,13 @@ def cifar100():
 def cifar10():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
-    dataset_train = CIFAR10(root='～/Datasets/cifar10', train=True, transform=transforms.Compose([
+    dataset_train = CIFAR10(root=os.path.expanduser('~/Datasets/cifar10'), train=True, transform=transforms.Compose([
             transforms.RandomHorizontalFlip(),
             transforms.RandomCrop(32, 4),
             transforms.ToTensor(),
             normalize,
         ]), download=True)
-    dataset_val = datasets.CIFAR10(root='~/Datasets/cifar10', train=False, transform=transforms.Compose([
+    dataset_val = CIFAR10(root=os.path.expanduser('~/Datasets/cifar10'), train=False, transform=transforms.Compose([
             transforms.ToTensor(),
             normalize,
         ]))
