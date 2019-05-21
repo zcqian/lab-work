@@ -22,6 +22,7 @@ import torchvision.datasets as datasets
 
 import models
 import datasets
+import optimizers
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
@@ -30,6 +31,11 @@ dataset_names = sorted(name for name in datasets.__dict__
                        if name.islower() and not name.startswith('__')
                        and callable(datasets.__dict__[name]))
 
+optimizer_names =  sorted(name for name in optimizers.__dict__
+                          if name.islower() and not name.startswith('__')
+                          and callable(optimizers.__dict__[name]))
+
+
 parser = argparse.ArgumentParser(description='PyTorch Training')
 parser.add_argument('-a', '--arch', metavar='ARCH', required=True,
                     choices=model_names,
@@ -37,6 +43,9 @@ parser.add_argument('-a', '--arch', metavar='ARCH', required=True,
 parser.add_argument('-d', '--dataset', metavar='DATASET', required=True,
                     choices=dataset_names,
                     help=f"dataset to use: {'/'.join(dataset_names)}")
+parser.add_argument('--optimizer', metavar='OPTIM', required=True,
+                    choices=optimizer_names,
+                    help=f"optimizer/lr_scheduler to use: {'/'.join(optimizer_names)}")
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('--epochs', default=90, type=int, metavar='N',
@@ -48,13 +57,7 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
                     help='mini-batch size (default: 256), this is the total '
                          'batch size of all GPUs on the current node when '
                          'using Data Parallel or Distributed Data Parallel')
-parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
-                    metavar='LR', help='initial learning rate', dest='lr')
-parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
-                    help='momentum')
-parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
-                    metavar='W', help='weight decay (default: 1e-4)',
-                    dest='weight_decay')
+
 parser.add_argument('-p', '--print-freq', default=10, type=int,
                     metavar='N', help='print frequency (default: 10)')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
@@ -175,9 +178,7 @@ def main_worker(gpu, ngpus_per_node, args):
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
-    optimizer = torch.optim.SGD(model.parameters(), args.lr,
-                                momentum=args.momentum,
-                                weight_decay=args.weight_decay)
+    optimizer, scheduler = optimizers.__dict__[args.optimizer](model)
 
     # optionally resume from a checkpoint
     if args.resume:
@@ -191,6 +192,7 @@ def main_worker(gpu, ngpus_per_node, args):
                 best_acc1 = best_acc1.to(args.gpu)
             model.load_state_dict(checkpoint['state_dict'])
             optimizer.load_state_dict(checkpoint['optimizer'])
+            scheduler.load_state_dict(checkpoint['scheduler'])
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(args.resume, checkpoint['epoch']))
         else:
@@ -222,13 +224,14 @@ def main_worker(gpu, ngpus_per_node, args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        adjust_learning_rate(optimizer, epoch, args)
 
         # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch, args)
 
         # evaluate on validation set
         acc1 = validate(val_loader, model, criterion, args)
+
+        scheduler.step()
 
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
@@ -241,7 +244,8 @@ def main_worker(gpu, ngpus_per_node, args):
                 'arch': args.arch,
                 'state_dict': model.state_dict(),
                 'best_acc1': best_acc1,
-                'optimizer' : optimizer.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'scheduler': scheduler.state_dict()
             }, is_best)
 
 
@@ -376,13 +380,6 @@ class ProgressMeter(object):
         num_digits = len(str(num_batches // 1))
         fmt = '{:' + str(num_digits) + 'd}'
         return '[' + fmt + '/' + fmt.format(num_batches) + ']'
-
-
-def adjust_learning_rate(optimizer, epoch, args):
-    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
-    lr = args.lr * (0.1 ** (epoch // 30))
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
 
 
 def accuracy(output, target, topk=(1,)):
