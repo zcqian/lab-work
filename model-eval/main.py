@@ -31,7 +31,7 @@ dataset_names = sorted(name for name in datasets.__dict__
                        if name.islower() and not name.startswith('__')
                        and callable(datasets.__dict__[name]))
 
-optimizer_names =  sorted(name for name in optimizers.__dict__
+optimizer_names = sorted(name for name in optimizers.__dict__
                           if name.islower() and not name.startswith('__')
                           and callable(optimizers.__dict__[name]))
 
