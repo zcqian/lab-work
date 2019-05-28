@@ -1,6 +1,7 @@
 import os
 import torchvision.transforms as transforms
 from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100
+from torch.utils.data import Subset
 
 
 def imagenet1k():
@@ -76,3 +77,31 @@ def cifar10():
             normalize,
         ]))
     return dataset_train, dataset_val
+
+
+def cifar64_rand():
+    import random
+    rnd = random.Random()
+    rnd.seed()
+    all_labels = list(range(100))
+    rnd.shuffle(all_labels)
+    select_labels = all_labels[:64]
+    remap_dict = {all_labels[orig_label]: orig_label for orig_label in range(100)}
+    remap_label_transform = transforms.Lambda(lambda x: remap_dict[x])
+    normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
+    dataset = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomCrop(32, 4),
+            transforms.ToTensor(),
+            normalize,
+        ]), target_transform=remap_label_transform, download=True)
+    select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] in select_labels]
+    dataset_train = Subset(dataset, select_idx)
+
+    dataset = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=False, transform=transforms.Compose([
+            transforms.ToTensor(),
+            normalize,
+        ]), target_transform=remap_label_transform)
+    select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] in select_labels]
+    dataset_test = Subset(dataset, select_idx)
+    return dataset_train, dataset_test
