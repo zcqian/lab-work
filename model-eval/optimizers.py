@@ -23,3 +23,14 @@ def resnet_cifar_sgd(model, start_epoch=0):
     )
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [100, 150])
     return optimizer, scheduler
+
+
+def resnet_cifar_sgd_wd_1(model, start_epoch=0):
+    LR = 0.1
+    MOMENTUM = 0.9
+    WD = 1e-4
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WD
+    )
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [100, 150])
+    return optimizer, scheduler
