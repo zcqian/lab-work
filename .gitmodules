@@ -1,0 +1,3 @@
+[submodule "lab-private"]
+	path = lab-private
+	url = git@github.com:zcqian/lab-private.git
