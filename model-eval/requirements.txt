@@ -1,5 +1,5 @@
 numpy
-torch
+pytorch
 torchvision
 scipy
 tabulate
