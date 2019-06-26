@@ -51,13 +51,13 @@ def get_basic_statistics(results_dict):
 
 
 targets = sys.argv[2:]
-prefix = len(os.path.commonprefix(targets))
+prefix_length = len(os.path.commonprefix(targets))
 results = {}
 
 for target in targets:
     path_pattern = os.path.realpath(target)
     path_pattern += '/save_run_*'
-    target_name = target[prefix-3:]
+    target_name = target[prefix_length-1:]
     results[target_name] = analyze_results_given_dir_pattern(path_pattern)
 
 # brief
