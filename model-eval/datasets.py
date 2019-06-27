@@ -1,6 +1,6 @@
 import os
 import torchvision.transforms as transforms
-from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100
+from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN
 from torch.utils.data import Subset
 from datasets_implementation import *
 
@@ -126,3 +126,17 @@ def cifar64_ordered():
     select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] < 64]
     dataset_test = Subset(dataset, select_idx)
     return dataset_train, dataset_test
+
+
+def svhn_normalize_as_cf100():
+    normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
+    dataset_train = SVHN(root=os.path.expanduser('~/Datasets/svhn'), split='train',
+                         transform=transforms.Compose([
+                             transforms.RandomHorizontalFlip(),
+                             transforms.RandomCrop(32, 4),
+                             transforms.ToTensor(),
+                             normalize,
+                         ]), download=True)
+    dataset_val = SVHN(root=os.path.expanduser('~/Datasets/svhn'), split='test',
+                       transform=normalize, download=True)
+    return dataset_train, dataset_val
