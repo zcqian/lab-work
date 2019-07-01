@@ -3,3 +3,4 @@ pytorch
 torchvision
 scipy
 tabulate
+tqdm
