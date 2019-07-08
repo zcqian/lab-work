@@ -56,8 +56,7 @@ with torch.no_grad():
         r = F.softmax(r, dim=1)
         r = r.max(dim=1)[0]
         out.append(r.detach().clone())
-        if __debug__ and idx > 2:
-            break
+
 
 out = torch.cat(out)
 torch.save(out, args.output)
