@@ -59,7 +59,7 @@ with torch.no_grad():
         out.append(r.detach().clone())
 
 out = torch.cat(out)
-torch.save(out, f'{args.arch}_{args.dataset}.ood.pth')
+torch.save(out, args.output)
 
 
 
