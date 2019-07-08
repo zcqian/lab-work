@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 import models
 import datasets
 import torch
@@ -9,7 +8,6 @@ import tqdm
 from torch.utils.data import ConcatDataset, DataLoader
 import torch.nn.functional as F
 from collections import OrderedDict
-
 
 
 model_names = sorted(name for name in models.__dict__
