@@ -138,5 +138,8 @@ def svhn_normalize_as_cf100():
                              normalize,
                          ]), download=True)
     dataset_val = SVHN(root=os.path.expanduser('~/Datasets/svhn'), split='test',
-                       transform=normalize, download=True)
+                       transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           normalize,
+                       ]), download=True)
     return dataset_train, dataset_val
