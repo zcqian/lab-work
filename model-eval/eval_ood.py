@@ -23,7 +23,6 @@ parser.add_argument('-a', '--arch', metavar='ARCH', required=True,
                     choices=model_names,
                     help=f"model architecture: {'/'.join(model_names)}")
 parser.add_argument('-d', '--dataset', metavar='DATASET', required=True,
-                    choices=dataset_names,
                     help=f"dataset to use: {'/'.join(dataset_names)}")
 parser.add_argument('-c', '--checkpoint', type=str, metavar='CHECKPOINT', required=True,
                     help="use specified checkpoint archive file")
@@ -57,6 +56,8 @@ with torch.no_grad():
         r = F.softmax(r, dim=1)
         r = r.max(dim=1)[0]
         out.append(r.detach().clone())
+        if __debug__ and idx > 2:
+            break
 
 out = torch.cat(out)
 torch.save(out, args.output)
