@@ -166,7 +166,7 @@ def rnd_gaussian_32x32_rgb():
     data[:, 0] = (data[:, 0] - 0.5071) / 0.2673
     data[:, 1] = (data[:, 1] - 0.4865) / 0.2564
     data[:, 2] = (data[:, 2] - 0.4409) / 0.2762
-    return None, TensorDataset(data)
+    return None, TensorDataset(data, torch.zeros(10000).long())
 
 
 def rnd_uniform_32x32_rgb():
@@ -174,4 +174,4 @@ def rnd_uniform_32x32_rgb():
     data[:, 0] = (data[:, 0] - 0.5071) / 0.2673
     data[:, 1] = (data[:, 1] - 0.4865) / 0.2564
     data[:, 2] = (data[:, 2] - 0.4409) / 0.2762
-    return None, TensorDataset(data)
+    return None, TensorDataset(data, torch.zeros(10000).long())
