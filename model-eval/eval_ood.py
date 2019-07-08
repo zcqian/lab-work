@@ -5,7 +5,7 @@ import models
 import datasets
 import torch
 import tqdm
-from torch.utils.data import ConcatDataset, DataLoader
+from torch.utils.data import DataLoader
 import torch.nn.functional as F
 from collections import OrderedDict
 

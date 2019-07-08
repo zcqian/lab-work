@@ -1,8 +1,10 @@
 import os
 import torchvision.transforms as transforms
+import torch
 from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN
-from torch.utils.data import Subset
+from torch.utils.data import Subset, TensorDataset
 from datasets_implementation import *
+from textwrap import dedent
 
 
 def imagenet1k():
@@ -142,16 +144,34 @@ def svhn_normalize_as_cf100_no_rnd():
     return dataset_train, dataset_val
 
 
-def tinyimagenet_normalize_as_cf100_no_rnd():
-    normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
-    transform = transforms.Compose([
-        transforms.Resize((32, 32)),
-        transforms.ToTensor(),
-        normalize,
-    ])
-    dataset_dir = os.path.expanduser('~/Datasets/tinyimagenet')
-    train_dir = os.path.join(dataset_dir, 'train')
-    val_dir = os.path.join(dataset_dir, 'val')
-    dataset_train = ImageFolder(train_dir, transform)
-    dataset_val = ImageFolder(val_dir, transform)
-    return dataset_train, dataset_val
+# The dataset from ODIN code
+for ds_name in ["TinyImageNet_resize", "TinyImageNet_crop", "iSUN"]:
+    code = f"""\
+    def odin_{ds_name}():
+        normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
+        transform = transforms.Compose([
+            transforms.Resize((32, 32)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        dataset = ImageFolder(os.path.expanduser("~/Datasets/ODIN/{ds_name}"), transform)
+        return None, dataset
+    """
+    exec(dedent(code))
+
+
+def rnd_gaussian_32x32_rgb():
+    data = torch.randn((10000, 3, 32, 32)) + 0.5
+    data = torch.clamp(data, 0, 1)
+    data[:, 0] = (data[:, 0] - 0.5071) / 0.2673
+    data[:, 1] = (data[:, 1] - 0.4865) / 0.2564
+    data[:, 2] = (data[:, 2] - 0.4409) / 0.2762
+    return None, TensorDataset(data)
+
+
+def rnd_uniform_32x32_rgb():
+    data = torch.rand((10000, 3, 32, 32))
+    data[:, 0] = (data[:, 0] - 0.5071) / 0.2673
+    data[:, 1] = (data[:, 1] - 0.4865) / 0.2564
+    data[:, 2] = (data[:, 2] - 0.4409) / 0.2762
+    return None, TensorDataset(data)
