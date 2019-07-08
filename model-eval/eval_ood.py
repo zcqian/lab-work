@@ -47,8 +47,7 @@ model.load_state_dict(state_dict)
 model.eval()
 
 # dataset
-ood_train, ood_val = datasets.__dict__[args.dataset]()
-dataset = ConcatDataset((ood_train, ood_val))
+_, dataset = datasets.__dict__[args.dataset]()
 dl = DataLoader(dataset, batch_size=256, num_workers=4)
 out = []
 
