@@ -61,10 +61,3 @@ with torch.no_grad():
 
 out = torch.cat(out)
 torch.save(out, args.output)
-
-
-
-
-
-
-
