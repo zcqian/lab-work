@@ -128,18 +128,30 @@ def cifar64_ordered():
     return dataset_train, dataset_test
 
 
-def svhn_normalize_as_cf100():
+def svhn_normalize_as_cf100_no_rnd():
     normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
+    transform = transforms.Compose([
+        transforms.Resize((32, 32)),
+        transforms.ToTensor(),
+        normalize,
+    ])
     dataset_train = SVHN(root=os.path.expanduser('~/Datasets/svhn'), split='train',
-                         transform=transforms.Compose([
-                             transforms.RandomHorizontalFlip(),
-                             transforms.RandomCrop(32, 4),
-                             transforms.ToTensor(),
-                             normalize,
-                         ]), download=True)
+                         transform=transform, download=True)
     dataset_val = SVHN(root=os.path.expanduser('~/Datasets/svhn'), split='test',
-                       transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           normalize,
-                       ]), download=True)
+                       transform=transform, download=True)
+    return dataset_train, dataset_val
+
+
+def tinyimagenet_normalize_as_cf100_no_rnd():
+    normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
+    transform = transforms.Compose([
+        transforms.Resize((32, 32)),
+        transforms.ToTensor(),
+        normalize,
+    ])
+    dataset_dir = os.path.expanduser('~/Datasets/tinyimagenet')
+    train_dir = os.path.join(dataset_dir, 'train')
+    val_dir = os.path.join(dataset_dir, 'val')
+    dataset_train = ImageFolder(train_dir, transform)
+    dataset_val = ImageFolder(val_dir, transform)
     return dataset_train, dataset_val
