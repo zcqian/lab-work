@@ -121,9 +121,7 @@ def main():
     args = parser.parse_args()
 
     if args.seed is not None:
-        random.seed(args.seed)
-        torch.manual_seed(args.seed)
-        cudnn.deterministic = True
+        set_all_rng_seed(args.seed)
         warnings.warn('You have chosen to seed training. '
                       'This will turn on the CUDNN deterministic setting, '
                       'which can slow down your training considerably! '
@@ -218,12 +216,14 @@ def main_worker(gpu, ngpus_per_node, args):
             checkpoint = torch.load(args.resume)
             args.start_epoch = checkpoint['epoch']
             best_acc1 = checkpoint['best_acc1']
-            if args.gpu is not None:
+            if args.gpu is not None and args.gpu != -1:
                 # best_acc1 may be from a checkpoint from a different GPU
                 best_acc1 = best_acc1.to(args.gpu)
             model.load_state_dict(checkpoint['state_dict'])
             optimizer.load_state_dict(checkpoint['optimizer'])
             scheduler.load_state_dict(checkpoint['scheduler'])
+            set_all_rng_seed(args.seed)
+            set_all_rng_states(checkpoint['rng_state'])
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(args.resume, checkpoint['epoch']))
         else:
@@ -340,9 +340,10 @@ def validate(val_loader, model, criterion, args):
     with torch.no_grad():
         end = time.time()
         for i, (input, target) in enumerate(val_loader):
-            if args.gpu is not None:
+            if args.gpu is not None and args.gpu != -1:
                 input = input.cuda(args.gpu, non_blocking=True)
-            target = target.cuda(args.gpu, non_blocking=True)
+            if args.gpu != -1:
+                target = target.cuda(args.gpu, non_blocking=True)
 
             # compute output
             output = model(input)
