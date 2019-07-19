@@ -23,3 +23,6 @@ models_implementation
 
 # JetBrains
 .idea/
+
+# VSC
+.vscode/
