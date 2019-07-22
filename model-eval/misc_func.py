@@ -1,4 +1,5 @@
 import time
+from functools import reduce
 from collections import OrderedDict
 
 import torch
@@ -63,3 +64,21 @@ def dist_state_dict_to_conventional(state_dict: OrderedDict) -> OrderedDict:
         for k in old_state_dict:
             state_dict[k[7:]] = old_state_dict[k]  # 7 is len('module.')
     return state_dict
+
+
+def count_parameters(model: nn.Module, verbose: bool = False) -> int:
+    state_dict = model.state_dict()
+    total_param = 0
+    for k in state_dict:
+        name = k.split('.')[-1]
+        if name not in ['running_mean', 'running_var', 'num_batches_tracked']:
+            num_of_param = reduce(lambda x, y: x * y, list(state_dict[k].size()))
+            if verbose:
+                print(f"{k:40}\t{num_of_param:>11,}")
+            total_param += num_of_param
+        else:
+            if verbose:
+                print(f"{k:40}\tNOT COUNTED")
+    if verbose:
+        print('*' * 15)
+    return total_param
