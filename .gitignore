@@ -26,3 +26,4 @@ models_implementation
 
 # VSC
 .vscode/
+model-eval/scratch.py
