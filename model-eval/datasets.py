@@ -30,6 +30,21 @@ def imagenet1k():
     return dataset_train, dataset_val
 
 
+def imagenet1k_10cropvalonly():
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+    dataset_dir = os.path.expanduser('~/Datasets/imagenet')
+    val_dir = os.path.join(dataset_dir, 'val')
+    dataset_train = None
+    dataset_val = ImageFolder(val_dir, transforms.Compose([
+            transforms.Resize(256),
+            transforms.TenCrop(224),
+            transforms.Lambda(lambda crops: torch.stack([normalize(transforms.ToTensor()(crop)) for crop in crops])),
+        ]))
+    return dataset_train, dataset_val
+
+
+
 def tinyimagenet():
     normalize = transforms.Normalize(mean=[0.4802, 0.4481, 0.3975],
                                      std=[0.2770, 0.2691, 0.2821])
