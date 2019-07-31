@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import torch.optim
 import torch.optim.lr_scheduler
 
@@ -37,3 +38,9 @@ def resnet_cifar_sgd(model, wd=1e-4):
 
 def resnet_cifar_sgd_wd5(model):
     return resnet_cifar_sgd(model, wd=5e-4)
+
+
+def mnist_opt(model: nn.Module):
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-4)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [10, 20])
+    return optimizer, scheduler

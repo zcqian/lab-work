@@ -1,10 +1,21 @@
 import os
 import torchvision.transforms as transforms
 import torch
-from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN
+from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN, MNIST
 from torch.utils.data import Subset, TensorDataset
 from datasets_implementation import *
 from textwrap import dedent
+
+
+def mnist():
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,)),
+        ])
+    dataset_dir = os.path.expanduser('~/Datasets/mnist')
+    dataset_train = MNIST(root=dataset_dir, train=True, download=True, transform=transform)
+    dataset_val = MNIST(root=dataset_dir, train=False, transform=transform)
+    return dataset_train, dataset_val
 
 
 def imagenet1k():
