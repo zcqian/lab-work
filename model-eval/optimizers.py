@@ -44,3 +44,9 @@ def mnist_opt(model: nn.Module):
     optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [10, 20])
     return optimizer, scheduler
+
+
+def mobilenet_v2_opt(model: nn.Module):
+    optimizer = torch.optim.RMSprop(model.parameters(), lr=0.045, alpha=0.9, momentum=0.9, weight_decay=0.00004)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.98)
+    return optimizer, scheduler
