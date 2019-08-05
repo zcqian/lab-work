@@ -47,6 +47,18 @@ def mnist_opt(model: nn.Module):
 
 
 def mobilenet_v2_opt(model: nn.Module):
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=0.045, alpha=0.9, momentum=0.9, weight_decay=0.00004)
+    """Optimizer/LR_Scheduler for MobileNet v2
+
+    Uses parameters comparable to the paper, but LR is lower because our batch size is smaller.
+    They use batch size of 96 x 16 (I think), we are using 256. We should decrease from 0.045 by a factor of sqrt(6),
+    but 0.02 seems close enough.
+
+    Args:
+        model: MobileNet_v2 or similar
+
+    Returns:
+
+    """
+    optimizer = torch.optim.RMSprop(model.parameters(), lr=0.02, alpha=0.9, momentum=0.9, weight_decay=0.00004)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.98)
     return optimizer, scheduler
