@@ -1,7 +1,7 @@
 import os
 import torchvision.transforms as transforms
 import torch
-from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN, MNIST
+from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN, MNIST, ImageNet
 from torch.utils.data import Subset, TensorDataset
 from datasets_implementation import *
 from textwrap import dedent
@@ -22,17 +22,17 @@ def imagenet1k():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
     dataset_dir = os.path.expanduser('~/Datasets/imagenet')
-    train_dir = os.path.join(dataset_dir, 'train')
-    val_dir = os.path.join(dataset_dir, 'val')
-    dataset_train = ImageFolder(
-        train_dir,
-        transforms.Compose([
+    dataset_train = ImageNet(
+        dataset_dir, split='train',
+        transform=transforms.Compose([
             transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             normalize,
         ]))
-    dataset_val = ImageFolder(val_dir, transforms.Compose([
+    dataset_val = ImageNet(
+        dataset_dir, split='val',
+        transform=transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
