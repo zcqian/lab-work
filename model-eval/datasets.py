@@ -201,3 +201,24 @@ def rnd_uniform_32x32_rgb():
     data[:, 1] = (data[:, 1] - 0.4865) / 0.2564
     data[:, 2] = (data[:, 2] - 0.4409) / 0.2762
     return None, TensorDataset(data, torch.zeros(10000).long())
+
+
+def places365():
+    normalize = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    # the above normalization seems strange, why use ImageNet values, or are they the same
+    dir_train = os.path.expanduser('~/Datasets/places365_standard/train')
+    dir_val = os.path.expanduser('~/Datasets/places365_standard/val')
+    dataset_train = ImageFolder(root=dir_train,
+                                transform=transforms.Compose([
+                                    transforms.RandomResizedCrop(224),
+                                    transforms.RandomHorizontalFlip(),
+                                    transforms.ToTensor(),
+                                    normalize,
+                                ]))
+    dataset_val = ImageFolder(root=dir_val,
+                              transform=transforms.Compose([
+                                  transforms.CenterCrop(224),  # they said it was already 256x256
+                                  transforms.ToTensor(),
+                                  normalize,
+                              ]))
+    return dataset_train, dataset_val
