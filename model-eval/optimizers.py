@@ -26,6 +26,38 @@ def resnet_imagenet_sgd_tune(model: torch.nn.Module):
     return optimizer, scheduler
 
 
+def shufflenet_v2_imagnet_sgd_tune(model: torch.nn.Module):
+    LR = 0.1
+    MOMENTUM = 0.9
+    WD = 1e-4
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WD
+    )
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [10, 20])
+    return optimizer, scheduler
+
+
+def shufflenet_v2_imagnet_sgd_tune_2(model: torch.nn.Module):
+    LR = 0.1
+    MOMENTUM = 0.9
+    WD = 4e-5
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WD
+    )
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [20, 30, 40])
+    return optimizer, scheduler
+
+def shufflenet_v2_imagnet_sgd_tune_3(model: torch.nn.Module):
+    LR = 0.1
+    MOMENTUM = 0.9
+    WD = 4e-5
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WD
+    )
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [10, 15, 20])
+    return optimizer, scheduler
+
+
 def resnet_cifar_sgd(model, wd=1e-4):
     LR = 0.1
     MOMENTUM = 0.9
@@ -35,6 +67,15 @@ def resnet_cifar_sgd(model, wd=1e-4):
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [100, 150])
     return optimizer, scheduler
 
+
+def resnet_cifar_inc_batch(model, wd=1e-4):
+    LR = 0.01
+    MOMENTUM = 0.9
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=wd
+    )
+    scheduler = None
+    return optimizer, scheduler
 
 def resnet_cifar_sgd_wd5(model):
     return resnet_cifar_sgd(model, wd=5e-4)
