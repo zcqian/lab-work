@@ -278,7 +278,7 @@ def main_worker(gpu, ngpus_per_node, args):
                 'optimizer': optimizer.state_dict(),
                 'scheduler': scheduler.state_dict(),
                 'rng_state': get_all_rng_states()
-            }, is_best)
+            }, is_best, f'checkpoint_e_{epoch}.pt')
 
 
 def train(train_loader, model, criterion, optimizer, epoch, args):
