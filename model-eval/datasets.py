@@ -5,6 +5,7 @@ from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN, MNIST, Im
 from torch.utils.data import Subset, TensorDataset
 from datasets_implementation import *
 from textwrap import dedent
+from typing import List
 
 
 def mnist():
@@ -154,6 +155,19 @@ def cifar64_ordered():
     select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] < 64]
     dataset_test = Subset(dataset, select_idx)
     return dataset_train, dataset_test
+
+
+def cifar100_subset(labels: List[int]):
+    ds_trn, ds_val = cifar100()
+    select_idx = [idx for idx in range(len(ds_trn)) if ds_trn.targets[idx] in labels]
+    ds_trn = Subset(ds_trn, select_idx)
+    select_idx = [idx for idx in range(len(ds_val)) if ds_val.targets[idx] in labels]
+    ds_val = Subset(ds_val, select_idx)
+    return ds_trn, ds_val
+
+
+def cifar50():
+    return cifar100_subset(list(range(50)))
 
 
 def svhn_normalize_as_cf100_no_rnd():
