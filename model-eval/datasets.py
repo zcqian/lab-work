@@ -220,3 +220,7 @@ def places365():
                                   normalize,
                               ]))
     return dataset_train, dataset_val
+
+
+def imagenet_100():
+    return _ordered_subset(imagenet1k, 100)
