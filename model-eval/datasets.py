@@ -1,17 +1,18 @@
 import os
-import torchvision.transforms as transforms
-import torch
-from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN, MNIST, ImageNet
-from torch.utils.data import Subset, TensorDataset
 from textwrap import dedent
-from typing import List
+from typing import Callable, Tuple
+
+import torch
+import torchvision.transforms as transforms
+from torch.utils.data import Dataset, Subset, TensorDataset
+from torchvision.datasets import ImageFolder, CIFAR10, CIFAR100, SVHN, MNIST, ImageNet
 
 
 def mnist():
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,)),
-        ])
+    ])
     dataset_dir = os.path.expanduser('~/Datasets/mnist')
     dataset_train = MNIST(root=dataset_dir, train=True, download=True, transform=transform)
     dataset_val = MNIST(root=dataset_dir, train=False, transform=transform)
@@ -48,12 +49,11 @@ def imagenet1k_10cropvalonly():
     val_dir = os.path.join(dataset_dir, 'val')
     dataset_train = None
     dataset_val = ImageFolder(val_dir, transforms.Compose([
-            transforms.Resize(256),
-            transforms.TenCrop(224),
-            transforms.Lambda(lambda crops: torch.stack([normalize(transforms.ToTensor()(crop)) for crop in crops])),
-        ]))
+        transforms.Resize(256),
+        transforms.TenCrop(224),
+        transforms.Lambda(lambda crops: torch.stack([normalize(transforms.ToTensor()(crop)) for crop in crops])),
+    ]))
     return dataset_train, dataset_val
-
 
 
 def tinyimagenet():
@@ -80,15 +80,15 @@ def tinyimagenet():
 def cifar100():
     normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
     dataset_train = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomCrop(32, 4),
-            transforms.ToTensor(),
-            normalize,
-        ]), download=True)
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomCrop(32, 4),
+        transforms.ToTensor(),
+        normalize,
+    ]), download=True)
     dataset_val = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=False, transform=transforms.Compose([
-            transforms.ToTensor(),
-            normalize,
-        ]))
+        transforms.ToTensor(),
+        normalize,
+    ]))
     return dataset_train, dataset_val
 
 
@@ -96,15 +96,15 @@ def cifar10():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
     dataset_train = CIFAR10(root=os.path.expanduser('~/Datasets/cifar10'), train=True, transform=transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomCrop(32, 4),
-            transforms.ToTensor(),
-            normalize,
-        ]), download=True)
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomCrop(32, 4),
+        transforms.ToTensor(),
+        normalize,
+    ]), download=True)
     dataset_val = CIFAR10(root=os.path.expanduser('~/Datasets/cifar10'), train=False, transform=transforms.Compose([
-            transforms.ToTensor(),
-            normalize,
-        ]))
+        transforms.ToTensor(),
+        normalize,
+    ]))
     return dataset_train, dataset_val
 
 
@@ -119,54 +119,39 @@ def cifar64_rand():
     remap_label_transform = transforms.Lambda(lambda x: remap_dict[x])
     normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
     dataset = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomCrop(32, 4),
-            transforms.ToTensor(),
-            normalize,
-        ]), target_transform=remap_label_transform, download=True)
-    select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] in select_labels]
-    dataset_train = Subset(dataset, select_idx)
-
-    dataset = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=False, transform=transforms.Compose([
-            transforms.ToTensor(),
-            normalize,
-        ]), target_transform=remap_label_transform)
-    select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] in select_labels]
-    dataset_test = Subset(dataset, select_idx)
-    return dataset_train, dataset_test
-
-
-def cifar64_ordered():
-    normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
-    dataset = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
         transforms.RandomHorizontalFlip(),
         transforms.RandomCrop(32, 4),
         transforms.ToTensor(),
         normalize,
-    ]), download=True)
-    select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] < 64]
+    ]), target_transform=remap_label_transform, download=True)
+    select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] in select_labels]
     dataset_train = Subset(dataset, select_idx)
 
     dataset = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=False, transform=transforms.Compose([
         transforms.ToTensor(),
         normalize,
-    ]))
-    select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] < 64]
+    ]), target_transform=remap_label_transform)
+    select_idx = [idx for idx in range(len(dataset)) if dataset.targets[idx] in select_labels]
     dataset_test = Subset(dataset, select_idx)
     return dataset_train, dataset_test
 
 
-def cifar100_subset(labels: List[int]):
-    ds_trn, ds_val = cifar100()
-    select_idx = [idx for idx in range(len(ds_trn)) if ds_trn.targets[idx] in labels]
-    ds_trn = Subset(ds_trn, select_idx)
-    select_idx = [idx for idx in range(len(ds_val)) if ds_val.targets[idx] in labels]
-    ds_val = Subset(ds_val, select_idx)
+def _ordered_subset(orig_dataset: Callable[[None], Tuple[Dataset, Dataset]], num_categories: int):
+    ds_trn, ds_val = orig_dataset()
+    accept_categories = list(range(num_categories))
+    subset_idx = [i for i in range(len(ds_trn)) if ds_trn.targets[i] in accept_categories]
+    ds_trn = Subset(ds_trn, subset_idx)
+    subset_idx = [i for i in range(len(ds_val)) if ds_val.targets[i] in accept_categories]
+    ds_val = Subset(ds_val, subset_idx)
     return ds_trn, ds_val
 
 
 def cifar50():
-    return cifar100_subset(list(range(50)))
+    return _ordered_subset(cifar100, 50)
+
+
+def cifar64_ordered():
+    return _ordered_subset(cifar100, 64)
 
 
 def svhn_normalize_as_cf100_no_rnd():
