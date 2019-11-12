@@ -6,7 +6,7 @@ import toml
 toml_path = sys.argv[1]
 
 experiments = toml.load(toml_path)
-curdir = os.curdir
+curdir = os.getcwd()
 
 
 for experiment_name, experiment_spec in experiments.items():
