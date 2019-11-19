@@ -1,15 +1,42 @@
+import copy
 import os
 import sys
+from typing import Dict
+import collections.abc
 
 import toml
 
-toml_path = sys.argv[1]
 
+def update(d: dict, u: dict):
+    d = copy.deepcopy(d)
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update(d.get(k, {}), copy.deepcopy(v))
+            # this will fail if d[k] is not already a dict, which is expected behavior
+        else:
+            d[k] = v
+    return d
+
+
+toml_path = sys.argv[1]
 experiments = toml.load(toml_path)
+
 curdir = os.getcwd()
 
-
+# the following code expands all "inherit", store in processed_specs
+processed_specs: Dict[str, Dict] = {}
 for experiment_name, experiment_spec in experiments.items():
+    inherit = experiment_spec.pop('inherit', None)
+    if inherit is not None:
+        spec = processed_specs[inherit].copy()
+    else:
+        spec = {}
+    
+    spec = update(spec, experiment_spec)
+    processed_specs[experiment_name] = copy.deepcopy(spec)
+
+# then loop through everything in processed_specs and invoke script according to specs
+for experiment_name, experiment_spec in processed_specs.items():
     os.chdir(curdir)
     script = experiment_spec['script']
 
@@ -24,14 +51,11 @@ for experiment_name, experiment_spec in experiments.items():
 
 
     try:
-        os.makedirs(experiment_name)
-        os.chdir(experiment_name)
         cmdline = f'python -u {script} -a {arch} -d {dataset} -b {batch_size} --optimizer {optimizer} --epochs {epochs} --seed {seed}'
-        ! echo $cmdline >> log.txt
-        ! $cmdline | tee -a log.txt
+        print(f"{experiment_name}: {cmdline}")
+        # os.makedirs(experiment_name)
+        # os.chdir(experiment_name)
+        # ! echo $cmdline >> log.txt
+        # ! $cmdline | tee -a log.txt
     except Exception as e:
         print(e)
-        # sys.exit(-1)
-
-
-    

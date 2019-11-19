@@ -1,0 +1,113 @@
+# Version 0.0.2 of spec
+
+[rn18nc1k_avgpool_s20190716]
+seed = 20190716
+dataset = "imagenet_100"
+script = "/home/zcqian/lab-work/model-eval/main.py"
+model.arch = "rn18_l4_1a_nc_1k_scratch"
+model.optim = "resnet_imagenet_sgd_default"
+hp.batch-size = 256
+hp.epochs = 90
+
+[rn18nc1k_avgpool_s201908]
+inherit = "rn18nc1k_avgpool_s20190716"
+seed = 201908
+
+[rn18nc1k_avgpool_s201909]
+inherit = "rn18nc1k_avgpool_s20190716"
+seed = 201909
+
+[rn18nc1k_avgpool_s201910]
+inherit = "rn18nc1k_avgpool_s20190716"
+seed = 201910
+
+[rn18nc1k_avgpool_s201911]
+inherit = "rn18nc1k_avgpool_s20190716"
+seed = 201911
+
+
+[rn18nc1k_maxpool_s20190716]
+inherit = "rn18nc1k_avgpool_s20190716"
+model.arch = "rn18_l4_1a_maxpool_nc_1k"
+
+[rn18nc1k_maxpool_s201908]
+inherit = "rn18nc1k_maxpool_s20190716"
+seed = 201908
+
+[rn18nc1k_maxpool_s201909]
+inherit = "rn18nc1k_maxpool_s20190716"
+seed = 201909
+
+[rn18nc1k_lppool_p_0_5_s20190716]
+inherit = "rn18nc1k_avgpool_s20190716"
+model.arch = "rn18_l4_1a_lppool_p0_5"
+
+[rn18nc1k_lppool_p_0_5_s201908]
+inherit = "rn18nc1k_lppool_p_0_5_s20190716"
+seed = 201908
+
+[rn18nc1k_lppool_p_0_5_s201909]
+inherit = "rn18nc1k_lppool_p_0_5_s20190716"
+seed = 201909
+
+[rn18nc1k_lppool_p_0_5_s201910]
+inherit = "rn18nc1k_lppool_p_0_5_s20190716"
+seed = 201910
+
+[rn18nc1k_lppool_p_0_5_s201911]
+inherit = "rn18nc1k_lppool_p_0_5_s20190716"
+seed = 201911
+
+
+[rn18nc1k_lppool_p_1_5_s20190716]
+inherit = "rn18nc1k_avgpool_s20190716"
+model.arch = "rn18_l4_1a_lppool_p1_5"
+
+[rn18nc1k_lppool_p_1_5_s201908]
+inherit = "rn18nc1k_lppool_p_1_5_s20190716"
+seed = 201908
+
+[rn18nc1k_lppool_p_1_5_s201909]
+inherit = "rn18nc1k_lppool_p_1_5_s20190716"
+seed = 201909
+
+[rn18nc1k_lppool_p_1_5_s201910]
+inherit = "rn18nc1k_lppool_p_1_5_s20190716"
+seed = 201910
+
+[rn18nc1k_lppool_p_1_5_s201911]
+inherit = "rn18nc1k_lppool_p_1_5_s20190716"
+seed = 201911
+
+[rn18nc1k_lppool_p_2_0_s20190716]
+inherit = "rn18nc1k_avgpool_s20190716"
+model.arch = "rn18_l4_1a_lppool_p2"
+
+[rn18nc1k_lppool_p_2_0_s201908]
+inherit = "rn18nc1k_lppool_p_2_0_s20190716"
+seed = 201908
+
+[rn18nc1k_lppool_p_2_0_s201909]
+inherit = "rn18nc1k_lppool_p_2_0_s20190716"
+seed = 201909
+
+[rn18nc1k_lppool_p_2_0_s201910]
+inherit = "rn18nc1k_lppool_p_2_0_s20190716"
+seed = 201910
+
+[rn18nc1k_lppool_p_2_0_s201911]
+inherit = "rn18nc1k_lppool_p_2_0_s20190716"
+seed = 201911
+
+
+[rn18nc1k_lppool_p_4_0_s20190716]
+inherit = "rn18nc1k_avgpool_s20190716"
+model.arch = "rn18_l4_1a_lppool_p4_0"
+
+[rn18nc1k_lppool_p_4_0_s201908]
+inherit = "rn18nc1k_lppool_p_4_0_s20190716"
+seed = 201908
+
+[rn18nc1k_lppool_p_4_0_s201909]
+inherit = "rn18nc1k_lppool_p_4_0_s20190716"
+seed = 201909
