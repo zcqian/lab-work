@@ -224,3 +224,18 @@ def places365():
 
 def imagenet_100():
     return _ordered_subset(imagenet1k, 100)
+
+def imagenet_50():
+    return _ordered_subset(imagenet1k, 50)
+
+
+def imagenet_100_scale_020_100():
+    ds_trn, ds_val = imagenet_100()
+    transform = transforms.Compose([
+        transforms.RandomResizedCrop(224, scale=(0.20, 1.00)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+    ds_trn.dataset.transform = transform
+    return ds_trn, ds_val

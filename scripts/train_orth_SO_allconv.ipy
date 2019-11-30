@@ -1,0 +1,26 @@
+import os
+import re
+import sys
+
+
+p = os.getcwd()
+SEED = 20190716
+OPTIM = os.path.basename(p)
+p = os.path.abspath(os.path.join(p, os.path.pardir))
+ARCH = os.path.basename(p)
+p = os.path.abspath(os.path.join(p, os.path.pardir))
+DATASET = os.path.basename(p)
+
+script_name = os.path.basename(sys.argv[0])
+regex = re.compile(r'.*-e(\d+)-b(\d+).*')    
+try:
+    m = regex.match(script_name)
+    EPOCHS = int(m.groups()[0])
+    BATCH_SIZE = int(m.groups()[1])
+except:
+    print("failed to obtain epoch and batch size settings")
+    sys.exit(-1)
+
+
+! python -u ~/lab-work/model-eval/main_allconv_orthogonal_regularization_SO.py -a $ARCH -d $DATASET -b $BATCH_SIZE --optimizer $OPTIM --epochs $EPOCHS --seed $SEED --resume checkpoint.pth.tar | tee -a log.txt
+#! ln -v model_best.pth.tar $ARCH.pt

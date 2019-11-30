@@ -7,4 +7,4 @@ class LinearDecayLR(_LRScheduler):
         super().__init__(optimizer, last_epoch)
 
     def get_lr(self):
-        return [base_lr + self.slope * self.last_epoch for base_lr in self.base_lrs]
+        return [base_lr - self.slope * self.last_epoch for base_lr in self.base_lrs]

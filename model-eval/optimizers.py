@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim
 import torch.optim.lr_scheduler
+from lr_scheduler import LinearDecayLR
 
 
 def resnet_imagenet_sgd_default(model: torch.nn.Module):
@@ -23,6 +24,19 @@ def resnet_imagenet_sgd_tune(model: torch.nn.Module):
         model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WD
     )
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [5, 10])
+    return optimizer, scheduler
+
+
+def shufflenet_imagenet_default(model: torch.nn.Module):
+    LR = 0.5
+    END_LR = 1e-6
+    SLOPE = (LR-END_LR) / 240  # more than 240 epochs and boom
+    MOMENTUM = 0.9
+    WD = 4e-5
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WD
+    )
+    scheduler = LinearDecayLR(optimizer, SLOPE)
     return optimizer, scheduler
 
 
