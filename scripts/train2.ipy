@@ -49,9 +49,11 @@ for experiment_name, experiment_spec in processed_specs.items():
     epochs = experiment_spec['hp']['epochs']
     batch_size = experiment_spec['hp']['batch-size']
 
+    workers = experiment_spec.get('workers', 4)
+
 
     try:
-        cmdline = f'python -u {script} -a {arch} -d {dataset} -b {batch_size} --optimizer {optimizer} --epochs {epochs} --seed {seed}'
+        cmdline = f'python -u {script} -a {arch} -d {dataset} -b {batch_size} --optimizer {optimizer} --epochs {epochs} --seed {seed} --workers {workers}'
         print(f"{experiment_name}: {cmdline}")
         os.makedirs(experiment_name)
         os.chdir(experiment_name)
