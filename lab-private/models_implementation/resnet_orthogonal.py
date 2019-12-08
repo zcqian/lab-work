@@ -4,6 +4,8 @@ import inspect
 import torch.nn as nn
 from torchvision.models import resnet18, ResNet
 
+from .resnet_imagenet import Bias
+
 
 class LambdaLayer(nn.Module):
     """Module/Layer that encapsulates a single function for PyTorch
@@ -88,6 +90,22 @@ class RepackagedResNet18(nn.Module):
         x = self.features(x)
         y = self.classifier(x)
         return y
+
+
+def rn18_512_scratch():
+    model = RepackagedResNet18(pretrained=False)
+    model.classifier[2] = nn.Linear(512, 512)
+    return model
+
+def rn18_512_id_scratch():
+    model = RepackagedResNet18(pretrained=False)
+    model.classifier[2] = nn.Identity()
+    return model
+
+def rn18_512_id_bias_scratch():
+    model = rn18_512_id_scratch()
+    model.classifier.add_module('bias', Bias(512, 512))
+    return model
 
 
 def rn18_l4_1a_nc_1k():
