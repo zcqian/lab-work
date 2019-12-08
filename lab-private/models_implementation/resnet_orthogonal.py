@@ -5,6 +5,7 @@ import torch.nn as nn
 from torchvision.models import resnet18, ResNet
 
 from .resnet_imagenet import Bias
+from .hadamard_3rdpty import HadamardProj
 
 
 class LambdaLayer(nn.Module):
@@ -105,6 +106,11 @@ def rn18_512_id_scratch():
 def rn18_512_id_bias_scratch():
     model = rn18_512_id_scratch()
     model.classifier.add_module('bias', Bias(512, 512))
+    return model
+
+def rn18_512_hadamard_scratch():
+    model = RepackagedResNet18(pretrained=False)
+    model.classifier[2] = HadamardProj(512, 512)
     return model
 
 
