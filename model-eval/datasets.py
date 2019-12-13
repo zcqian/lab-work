@@ -228,6 +228,9 @@ def imagenet_100():
 def imagenet_50():
     return _ordered_subset(imagenet1k, 50)
 
+def imagenet_256():
+    return _ordered_subset(imagenet1k, 256)
+
 def imagenet_512():
     return _ordered_subset(imagenet1k, 512)
 
