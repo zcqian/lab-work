@@ -3,6 +3,7 @@ import os
 import sys
 from typing import Dict
 import collections.abc
+import subprocess
 
 import toml
 
@@ -53,11 +54,29 @@ for experiment_name, experiment_spec in processed_specs.items():
 
 
     try:
-        cmdline = f'python -u {script} -a {arch} -d {dataset} -b {batch_size} --optimizer {optimizer} --epochs {epochs} --seed {seed} --workers {workers}'
+        cmds = [
+            'python',  '-u', script,
+            '-a', arch,
+            '-d', dataset,
+            '-b' f'{batch_size}',
+            '--optimizer', optimizer,
+            '--epochs', f'{epochs}',
+            '--seed', f'{seed}',
+            '--workers', f'{workers}',
+        ]
+        cmds = [str(o) for o in cmds]
+        cmdline = ' '.join(cmds)
         print(f"{experiment_name}: {cmdline}")
         os.makedirs(experiment_name)
         os.chdir(experiment_name)
         ! echo $cmdline >> log.txt
-        ! $cmdline | tee -a log.txt
+        subp = subprocess.Popen(cmds, stdout=subprocess.PIPE)
+        with open('log.txt', 'ab', buffering=0) as logfile:
+            while subp.poll() is None:
+                line = subp.stdout.readline()
+                if line:
+                    logfile.write(line)
+                    sys.stdout.buffer.write(line)
+                    sys.stdout.flush()
     except Exception as e:
         print(e)
