@@ -93,6 +93,16 @@ class RepackagedResNet18(nn.Module):
         return y
 
 
+def rn18_3x3clsf():
+    model = RepackagedResNet18(pretrained=False)
+    model.classifier = nn.Sequential(
+        OrderedDict([
+        ('conv', nn.Conv2d(512, 1000, kernel_size=3)),
+        ('pool', nn.AdaptiveAvgPool2d((1, 1))),
+        ('flatten', nn.Flatten())
+    ]))
+    return model
+
 def rn18_512_scratch():
     model = RepackagedResNet18(pretrained=False)
     model.classifier[2] = nn.Linear(512, 512)
