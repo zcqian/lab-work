@@ -11,3 +11,4 @@ from .shufflenet_v2 import *
 from .mobilenet_orthogonal import *
 from .resnet_orthogonal import *
 from .resnet_cmp_clsf import *
+from .resnet_removelayers import *
