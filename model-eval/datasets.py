@@ -221,18 +221,12 @@ def places365():
                               ]))
     return dataset_train, dataset_val
 
-
-def imagenet_100():
-    return _ordered_subset(imagenet1k, 100)
-
-def imagenet_50():
-    return _ordered_subset(imagenet1k, 50)
-
-def imagenet_256():
-    return _ordered_subset(imagenet1k, 256)
-
-def imagenet_512():
-    return _ordered_subset(imagenet1k, 512)
+for imgnet_subset_count in [50, 100, 8, 16, 32, 64, 128, 256, 512]:
+    code = f"""\
+        def imagenet_{imgnet_subset_count}():
+            return _ordered_subset(imagenet1k, {imgnet_subset_count})
+    """
+    exec(dedent(code))
 
 
 def imagenet_100_scale_020_100():
