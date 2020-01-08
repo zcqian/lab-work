@@ -34,8 +34,20 @@ class HadamardProj(nn.Module):
         self.eps = 1e-8
 
     def forward(self, x):
+        # TODO: fix this, although it no longer crashes on Windows + multi GPU
+        # I don't think doing assignments here in multi-process/thread setups
+        # make much sense
+        # I don't know why the old code works on single GPU (single process)
+        # but not multi GPU, on Windows.
+        #
+        # I have tested that it works on Windows/Linux with single GPU, 
+        # but I need to figure out if it works on Linux with multiple GPU.
+        # 
+        # If Linux + Multi-GPU works, then it could be an issue with spawn/fork different
+        # Anyways, doing the assignment here does not look good, and is not necessary
+        # as the type does not change very often, and is usually just single precision float
         if not isinstance(self.scale, nn.Parameter):
-            self.scale = self.scale.type_as(x)
+            self.scale = nn.Parameter(self.scale.type_as(x))
         x = x / (x.norm(2, -1, keepdim=True) + self.eps)
         w = self.proj.type_as(x)
 
