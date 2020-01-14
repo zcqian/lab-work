@@ -103,6 +103,38 @@ def rn18_3x3clsf():
     ]))
     return model
 
+
+# note on this one
+# it is semi-orthogonal
+def rn18_orthogonal_fc():
+    model = RepackagedResNet18(pretrained=False)
+    fc = nn.Linear(512, 1000, bias=True)
+    nn.init.orthogonal_(fc.weight.data)
+    fc.weight.requires_grad_(False)
+    model.classifier[2] = fc
+    return model
+
+
+# this is truly orthogonal
+def rn18_512_orthogonal_fc():
+    model = RepackagedResNet18(pretrained=False)
+    fc = nn.Linear(512, 512, bias=True)
+    nn.init.orthogonal_(fc.weight.data)
+    fc.weight.requires_grad_(False)
+    model.classifier[2] = fc
+    return model
+
+
+# this is semi-orthogonal but the other way around
+def rn18_256_orthogonal_fc():
+    model = RepackagedResNet18(pretrained=False)
+    fc = nn.Linear(512, 256, bias=True)
+    nn.init.orthogonal_(fc.weight.data)
+    fc.weight.requires_grad_(False)
+    model.classifier[2] = fc
+    return model
+
+
 def rn18_512_scratch():
     model = RepackagedResNet18(pretrained=False)
     model.classifier[2] = nn.Linear(512, 512)
