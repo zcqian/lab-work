@@ -13,3 +13,4 @@ from .resnet_orthogonal import *
 from .resnet_cmp_clsf import *
 from .resnet_removelayers import *
 from .resnet_reducedwidth import *
+from .resnet_18_256 import *
