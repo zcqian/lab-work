@@ -117,3 +117,14 @@ def mobilenet_v2_opt(model: nn.Module):
     optimizer = torch.optim.RMSprop(model.parameters(), lr=0.02, alpha=0.9, momentum=0.9, weight_decay=0.00004)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.98)
     return optimizer, scheduler
+
+
+def densenet_cifar_opt(model: nn.Module):
+    LR = 0.1
+    MOMENTUM = 0.9
+    WD = 10e-4
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WD, nesterov=True
+    )
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [150, 225])
+    return optimizer, scheduler
