@@ -122,7 +122,7 @@ def mobilenet_v2_opt(model: nn.Module):
 def densenet_cifar_opt(model: nn.Module):
     LR = 0.1
     MOMENTUM = 0.9
-    WD = 10e-4
+    WD = 1e-4
     optimizer = torch.optim.SGD(
         model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WD, nesterov=True
     )
