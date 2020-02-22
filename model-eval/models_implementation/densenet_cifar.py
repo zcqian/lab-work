@@ -8,7 +8,9 @@ __all__ = ['dn_bc_100_12_fc', 'dn_bc_100_12_hd']
 
 def dn_bc_100_12_fc():
     model = DenseNet(growth_rate=12, block_config=(16, 16, 16), num_init_features=24, num_classes=100)
-    model.features.conv0 = nn.Conv2d(3, 24, kernel_size=3, padding=1, bias=False)
+    conv = nn.Conv2d(3, 24, kernel_size=3, padding=1, bias=False)
+    nn.init.kaiming_normal_(conv.weight)
+    model.features.conv0 = conv
     return model
 
 
