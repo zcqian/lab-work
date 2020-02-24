@@ -92,6 +92,21 @@ def cifar100():
     return dataset_train, dataset_val
 
 
+def cifar100_aug2():
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    dataset_train = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
+        transforms.RandomCrop(32, 4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize,
+    ]), download=True)
+    dataset_val = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=False, transform=transforms.Compose([
+        transforms.ToTensor(),
+        normalize,
+    ]))
+    return dataset_train, dataset_val
+
+
 def cifar10():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
