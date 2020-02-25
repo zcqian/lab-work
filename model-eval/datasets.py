@@ -92,19 +92,44 @@ def cifar100():
     return dataset_train, dataset_val
 
 
+def cifar100_altaug(transform_t, transform_v):
+    dataset_train = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'),
+                             train=True, transform=transform_t, download=True)
+    dataset_val = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'),
+                           train=False, transform=transform_v)
+    return dataset_train, dataset_val
+
+
 def cifar100_aug2():
+    """ CIFAR-100, ImageNet statistics normalization, Random Crop then Mirror"""
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    dataset_train = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
+    transform_t = transforms.Compose([
         transforms.RandomCrop(32, 4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
-    ]), download=True)
-    dataset_val = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=False, transform=transforms.Compose([
+    ])
+    transform_v = transforms.Compose([
         transforms.ToTensor(),
         normalize,
-    ]))
-    return dataset_train, dataset_val
+    ])
+    return cifar100_altaug(transform_t, transform_v)
+
+
+def cifar100_aug3():
+    """ CIFAR-100, CIFAR-100 statistics normalization, Random Crop then Mirror"""
+    normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
+    transform_t = transforms.Compose([
+        transforms.RandomCrop(32, 4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize,
+    ])
+    transform_v = transforms.Compose([
+        transforms.ToTensor(),
+        normalize,
+    ])
+    return cifar100_altaug(transform_t, transform_v)
 
 
 def cifar10():
