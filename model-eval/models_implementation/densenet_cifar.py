@@ -12,6 +12,7 @@ def dn_bc_100_12_fc():
     conv = nn.Conv2d(3, 24, kernel_size=3, padding=1, bias=False)
     nn.init.kaiming_normal_(conv.weight)
     model.features.conv0 = conv
+    del model.features.norm0, model.features.relu0
     return model
 
 
