@@ -80,8 +80,28 @@ def tinyimagenet():
 def cifar100():
     normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
     dataset_train = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
-        transforms.RandomHorizontalFlip(),
         transforms.RandomCrop(32, 4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize,
+    ]), download=True)
+    dataset_val = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=False, transform=transforms.Compose([
+        transforms.ToTensor(),
+        normalize,
+    ]))
+    return dataset_train, dataset_val
+
+
+def cifar100_jitter():
+    jitter_param = 0.4
+    normalize = transforms.Normalize(mean=(0.5071, 0.4865, 0.4409), std=(0.2673, 0.2564, 0.2762))
+    dataset_train = CIFAR100(root=os.path.expanduser('~/Datasets/cifar100'), train=True, transform=transforms.Compose([
+        transforms.RandomCrop(32, 4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(
+            brightness=jitter_param,
+            contrast=jitter_param,
+            saturation=jitter_param),
         transforms.ToTensor(),
         normalize,
     ]), download=True)
