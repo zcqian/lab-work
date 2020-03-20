@@ -36,7 +36,7 @@ from models_implementation.clsf_utils import __fixed_eye, __no_bias, generate_or
 __all__ = ['rn32_cf10', 'rn32_cf100', 'resnet32_cifar10_fixed_eye',
            'resnet32_cifar64_fixed_eye', 'resnet32_cifar64', 'resnet32_cifar64_fixed_eye_no_bias',
            'resnet32_cifar100_no_bias', 'resnet32',
-           'rn32_fixed_orthoplex',
+           'rn32_fixed_orthoplex', 'rn32_cf64_fx_or',
            'ResNet', 'BasicBlock']
 
 
@@ -168,6 +168,15 @@ def rn32_fixed_orthoplex():
     model = rn32_cf100()
     classifier = nn.Linear(model.fc.in_features, 100)
     classifier.weight.data = generate_orthoplex(classifier.in_features, classifier.out_features)
+    classifier.weight.requires_grad_(False)
+    model.fc = classifier
+    return model
+
+
+def rn32_cf64_fx_or():
+    model = rn32_cf100()
+    classifier = nn.Linear(model.fc.in_features, 100)
+    nn.init.orthogonal_(classifier.weight.data)
     classifier.weight.requires_grad_(False)
     model.fc = classifier
     return model
