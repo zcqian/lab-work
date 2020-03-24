@@ -32,6 +32,8 @@ import torch.nn.functional as F
 import torch.nn.init as init
 
 from models_implementation.clsf_utils import __fixed_eye, __no_bias, generate_orthoplex
+from .hadamard_3rdpty import HadamardProj
+
 
 __all__ = ['rn32_cf10', 'rn32_cf100', 'resnet32_cifar10_fixed_eye',
            'resnet32_cifar64_fixed_eye', 'resnet32_cifar64', 'resnet32_cifar64_fixed_eye_no_bias',
@@ -175,8 +177,15 @@ def rn32_fixed_orthoplex():
 
 def rn32_cf64_fx_or():
     model = rn32_cf100()
-    classifier = nn.Linear(model.fc.in_features, 100)
+    classifier = nn.Linear(model.fc.in_features, 64)
     nn.init.orthogonal_(classifier.weight.data)
     classifier.weight.requires_grad_(False)
+    model.fc = classifier
+    return model
+
+
+def rn32_cf64_fx_hd():
+    model = rn32_cf100()
+    classifier = HadamardProj(model.fc.in_features, 64)
     model.fc = classifier
     return model
